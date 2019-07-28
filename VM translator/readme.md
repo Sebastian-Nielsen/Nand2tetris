@@ -1,5 +1,7 @@
 https://www.coursera.org/learn/nand2tetris2/lecture/qmJl3/unit-1-8-vm-translator-proposed-implementation
+
 #VM Translator Design
+
 - Parser
 	| parses each VM cmd into its lexical elements
 - CodeWriter
