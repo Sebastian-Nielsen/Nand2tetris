@@ -10,7 +10,7 @@ https://www.coursera.org/learn/nand2tetris2/lecture/qmJl3/unit-1-8-vm-translator
 	| drives the process (VMTranslator)
 _______________________________________
 
-Main Logic:
+##### Main Logic:
 
 Constructs a parser to handle the input file.
 Constructs a CodeWriter to handle the output file.
