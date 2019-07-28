@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Nand2tetris.iml" filepath="$PROJECT_DIR$/.idea/Nand2tetris.iml" />
       <module fileurl="file://$PROJECT_DIR$/../Nand2tetris compilers &amp; assembler/.idea/Nand2tetris compilers &amp; assembler.iml" filepath="$PROJECT_DIR$/../Nand2tetris compilers &amp; assembler/.idea/Nand2tetris compilers &amp; assembler.iml" />
     </modules>
   </component>
