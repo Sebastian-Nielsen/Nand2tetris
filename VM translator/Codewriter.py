@@ -29,8 +29,8 @@ class Codewriter:
 		if command == 'C_PUSH':
 			self.write(f"////////////////////")
 			self.write(f"//push {segment} {i}")
-			self.write(f"@A")
-			self.write(f"D={i}")
+			self.write(f"@{i}")
+			self.write(f"D=A")
 			self.write(f"@SP")
 			self.write(f"A=M")
 			self.write(f"M=D    // *SP={i}")
@@ -38,7 +38,19 @@ class Codewriter:
 			self.write(f"@SP")
 			self.write(f"M=M+1  // SP++")
 		elif command == 'C_POP':
+			segmentAddress = ...
+			self.write(f"////////////////////")
+			self.write(f"//pop {segment} {i}")
 			self.write(f"")
+			self.write(f"@{i}")
+			self.write(f"D=A")
+			self.write(f"@{segment}")
+			self.write(f"D=D+A  // D=AddrToPushTo")
+			self.write(f"")
+			self.write(f"@SP")
+			self.write(f"A=A-1  // SP--")
+			self.write(f"A=M")
+			self.write(f"D=M    // D=*SP")
 		else:
 			self.raise_unknown(command)
 
