@@ -1,7 +1,6 @@
 from Parser import *
 from Codewriter import *
 
-
 parser = Parser(inFile= "inFile.asm")
 cw = Codewriter(outFile="outFile.asm")
 

@@ -128,18 +128,6 @@ class Parser:
 		jump_part_bin = jumpDict[jump_part]
 		return jump_part_bin
 
-	def hasMoreLabels(self):
-		"""
-		1. There are more labels;
-		self.curr_label is updated
-		:return True
-		2. There are no more labels;
-		self.curr_label is None
-		:return False
-		"""
-		self.next_label = self.getNextCmd()
-		return bool(self.next_cmd)
-
 	def convertDecToBin(self, dec: int) -> str:
 		return bin(dec)[2:]
 

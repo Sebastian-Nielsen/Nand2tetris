@@ -1,21 +1,6 @@
 from SymbolTable import SymbolTable
 from Parser import Parser
 import re
-
-"""
-main.py drives the entire
-translation process of the
-assembler.
-"""
-parser = Parser(inFile="inFile.asm")
-symbolTable = SymbolTable()
-"""Phase one
-Go through all lines; whenever
-a label is found; add it to 
-the symbol table. 
-"""
-
-
 def first_pass(file):
 	""":param Takes a file that is
 	already opened in read mode.
@@ -41,7 +26,17 @@ def first_pass(file):
 	file.seek(0)
 	return
 
+"""
+main.py drives the entire
+translation process of the
+assembler.
+"""
+parser = Parser(inFile="inFile.asm")
+symbolTable = SymbolTable()
 
+
+#############
+# FIRST PHASE
 first_pass(parser.file)
 
 #############
