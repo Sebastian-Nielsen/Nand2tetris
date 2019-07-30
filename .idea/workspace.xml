@@ -4,6 +4,8 @@
     <list default="true" id="f50de58f-5ba1-4707-a10a-14c89b4f4c62" name="Default Changelist" comment="Default Changelist">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assembler/Parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/Parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/SymbolTable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,6 +30,9 @@
     </option>
     <expand />
     <select />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="Nand2tetris compilers &amp; assembler" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -206,7 +211,7 @@
       <workItem from="1564434731824" duration="6231000" />
       <workItem from="1564441126835" duration="3134000" />
       <workItem from="1564482951922" duration="2173000" />
-      <workItem from="1564493390695" duration="2506000" />
+      <workItem from="1564493390695" duration="6089000" />
     </task>
     <servers />
   </component>

@@ -25,24 +25,17 @@ class Parser:
 
 	#######
 	### API
-	def resetFile(self):
-		"""Resets the 'cursor reader position'
-		to the start of the file.
-		"""
-		self.file.seek(0)
 
 	def hasMoreCommands(self) -> bool:
 		"""
 		1. There are more commands;
-		self.curr_cmd have been updated
+		self.curr_cmd is updated
 		:return True
 		2. There are no more commands;
 		self.curr_cmd is None
 		:return False
 		"""
-		# print(f'Before next_cmd: {self.next_cmd}')
 		self.next_cmd = self.getNextCmd()
-		# print(f'After next_cmd: {self.next_cmd}')
 		return bool(self.next_cmd)
 
 	def advance(self):
@@ -140,6 +133,20 @@ class Parser:
 		jump_part_bin = jumpDict[jump_part]
 		return jump_part_bin
 
+	def hasMoreLabels(self):
+		"""
+		1. There are more labels;
+		self.curr_label is updated
+		:return True
+		2. There are no more labels;
+		self.curr_label is None
+		:return False
+		"""
+		self.next_label = self.getNextCmd()
+		return bool(self.next_cmd)
+
+	def getNextLabel(self, ):
+		...
 	### API END
 	###########
 	def getNextCmd(self):
@@ -174,7 +181,8 @@ class Parser:
 				# Repeat the loop -> get a new line
 				continue
 
-			# The 'cleaned line' must be a command
+			# The 'cleaned line' must
+			# a command by now
 			command = line_cleaned
 			return command
 
@@ -188,10 +196,14 @@ class Parser:
 			return line
 
 	def removeCommentsAndStrip(self, line: str) -> str:
-		"""Removes all comments on a line,
+		"""Removes label and all comments on a line,
 		and strip() the line.
 		:return line [str]
 		"""
+		if line.startswith('('):
+			# The line contains a label
+			return ''
+
 		line = line.split('//')[0] #Remove inline comment
 		line = line.strip()
 		return line
