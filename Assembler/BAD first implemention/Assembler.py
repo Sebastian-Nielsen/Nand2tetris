@@ -91,7 +91,6 @@ def firstPass() -> None:
 
 		# Label
 		elif line.startswith("("):
-			print(line, line.startswith("("))
 			# Add the jump label to the symbol table.
 			label = line[1:-1]
 			symbolTable[label] = lineNumber

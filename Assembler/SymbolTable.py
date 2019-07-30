@@ -14,7 +14,7 @@ class SymbolTable:
 			'KBD': 24576
 		}
 		for i in range(16):
-			symbolTable[f"R{i}"] = i
+			self.symbolTable[f"R{i}"] = i
 
 		self.variablesEncountered = 0
 
@@ -22,7 +22,7 @@ class SymbolTable:
 		"""Adds the pair (symbol, address)
 		to the symbol table.
 		"""
-		symbolTable[symbol] = address
+		self.symbolTable[symbol] = address
 
 	def contains(self, symbol: str) -> bool:
 		"""Does the symbol table contain

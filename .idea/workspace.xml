@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f50de58f-5ba1-4707-a10a-14c89b4f4c62" name="Default Changelist" comment="Default Changelist">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assembler/BAD first implemention/Assembler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/BAD first implemention/Assembler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assembler/Parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/Parser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assembler/SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/SymbolTable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assembler/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/main.py" afterDir="false" />
@@ -85,7 +86,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Parser (1)">
+  <component name="RunManager" selected="Python.main">
     <configuration name="Assembler" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Nand2tetris compilers &amp; assembler" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -174,14 +175,38 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Nand2tetris" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Assembler" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Assembler/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.Assembler" />
       <item itemvalue="Python.Main" />
       <item itemvalue="Python.Parser" />
       <item itemvalue="Python.Parser (1)" />
+      <item itemvalue="Python.main" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.Parser (1)" />
         <item itemvalue="Python.Parser" />
         <item itemvalue="Python.Main" />
@@ -211,7 +236,7 @@
       <workItem from="1564434731824" duration="6231000" />
       <workItem from="1564441126835" duration="3134000" />
       <workItem from="1564482951922" duration="2173000" />
-      <workItem from="1564493390695" duration="6089000" />
+      <workItem from="1564493390695" duration="7626000" />
     </task>
     <servers />
   </component>
@@ -254,7 +279,8 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Parser.coverage" NAME="Parser Coverage Results" MODIFIED="1564494748770" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/VM translator" />
-    <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Parser__1_.coverage" NAME="Parser (1) Coverage Results" MODIFIED="1564496910734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Assembler" />
+    <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Parser__1_.coverage" NAME="Parser (1) Coverage Results" MODIFIED="1564501669892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Assembler" />
+    <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$main.coverage" NAME="main Coverage Results" MODIFIED="1564502236419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Assembler" />
     <SUITE FILE_PATH="coverage/Assembler_nand2tetris_$Assembler.coverage" NAME="Assembler Coverage Results" MODIFIED="1564264250755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

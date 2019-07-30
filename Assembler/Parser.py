@@ -210,31 +210,6 @@ class Parser:
 
 
 
-if __name__ == '__main__':
-	parser = Parser()
-	while parser.hasMoreCommands():
-		# Set 'next_cmd' to 'curr_cmd'
-		curr_cmd = parser.advance()
-		# Get he curr_cmd type
-		curr_cmdType = parser.commandType(curr_cmd)
-
-		if curr_cmdType == 'C_COMMAND':
-			a = '111'
-			c = parser.get_comp_bin(c_instr=curr_cmd)
-			d = parser.get_dest_bin(c_instr=curr_cmd)
-			j = parser.get_jump_bin(c_instr=curr_cmd)
-			curr_cmd_bin = f"{a}{c}{d}{j}"
-
-		elif curr_cmdType == 'A_COMMAND':
-			...
-		elif curr_cmdType == 'L_COMMAND':
-			...
-
-		print(parser.curr_cmd)
-		print(parser.commandType(parser.curr_cmd))
-		print(f"Machine language equivalent:   {curr_cmd_bin}")
-		print('__________________')
-
 """
 	0 1 2 3 4 5 6 7 8 9 1 1 2 3 4 5  (index)
 	1 1 1 a c c c c c c d d d j j j
