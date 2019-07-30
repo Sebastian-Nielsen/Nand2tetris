@@ -14,6 +14,8 @@ List of instructions
 http://f.javier.io/rep/books/The%20Elements%20of%20Computing%20Systems.pdf
 GOTO p. 138
 """
+import re
+from Code import compDict, destDict, jumpDict
 
 class Parser:
 	def __init__(self, inFile="inFile.vm"):
@@ -47,6 +49,7 @@ class Parser:
 		"""
 		self.curr_cmd = self.next_cmd
 		self.next_cmd = None
+		return self.curr_cmd
 
 	def commandType(self, cmd: str):
 		"""Types:
@@ -70,6 +73,27 @@ class Parser:
 
 	def symbol(self):
 		...
+
+	def dest(self, c_instr: str) -> str:
+		try:
+			dest = re.search(r'(?:(.*= *)?)(\w*)(?:( *;.*)?)')
+		except:
+			...
+
+
+	def comp(self, c_instr: str) -> str:
+		"""Takes a c-instruction as input
+		and returns the binary machine language
+		equivalent of the comp part. Example:
+		c_instr:  'M=D'
+		comp:
+		"""
+		comp_part = re.search(r'(\w*) *=', c_instr)
+		return compDict(c_instr[3:10])
+
+
+	def jump(self, c_instr: str) -> str:
+		return jumpDict(c_instr[13:16])
 
 	### API END
 	###########
@@ -132,6 +156,26 @@ class Parser:
 if __name__ == '__main__':
 	x = Parser()
 	while x.hasMoreCommands():
-		x.advance()
-		print(x.curr_cmd)
+		curr_cmd = x.advance()
+		curr_cmdType = x.commandType(curr_cmd)
 
+		if curr_cmdType == 'C_COMMAND':
+			a = '111'
+			b = x.comp(cmd=curr_cmd)
+			c = x.dest(cmd=curr_cmd)
+			d = x.jump(cmd=curr_cmd)
+		if curr_cmdType == 'A_COMMAND':
+			...
+		if curr_cmdType == 'L_COMMAND':
+			...
+
+		print(x.curr_cmd)
+		print(x.commandType(x.curr_cmd))
+		print('__________________')
+
+"""
+	0 1 2 3 4 5 6 7 8 9 1 1 2 3 4 5  (index)
+	1 1 1 a c c c c c c d d d j j j
+	^     \_____ _____/\_ __/\__ _/
+	opcode    comp      dest  jump
+"""
