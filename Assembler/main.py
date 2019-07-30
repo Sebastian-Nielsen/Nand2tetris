@@ -1,17 +1,21 @@
 from SymbolTable import SymbolTable
 from Parser import Parser
+import re
+
 """
 main.py drives the entire
 translation process of the
 assembler.
 """
-parser = Parser(inFile="inFile.vm")
+parser = Parser(inFile="inFile.asm")
 symbolTable = SymbolTable()
 """Phase one
 Go through all lines; whenever
 a label is found; add it to 
 the symbol table. 
 """
+
+
 def first_pass(file):
 	""":param Takes a file that is
 	already opened in read mode.
@@ -27,14 +31,18 @@ def first_pass(file):
 			# We only care about the label
 			# inbetween the paranthesis (XXX)
 			label = line[1:-1]
-			symbolTable[label] = lineNumber
-
-		lineNumber += 1
+			symbolTable.add_entry(
+				symbol=label,
+				address=lineNumber
+			)
+		elif parser.removeCommentsAndStrip(line=line) != '':
+			lineNumber += 1
 	# Remember to reset the file reader cursor
 	file.seek(0)
 	return
-first_pass(parser.file)
 
+
+first_pass(parser.file)
 
 #############
 # SECOND PASS
@@ -55,12 +63,19 @@ while parser.hasMoreCommands():
 	elif curr_cmdType == 'A_COMMAND':
 		# Remove '@'
 		curr_cmd = curr_cmd[1:]
-		# Check if it's a label that already
+
+		# If it's a decimal; convert it to bin
+		if re.search(r'^[0-9]+$', curr_cmd):
+			curr_cmd_bin = parser.convertDecToBin(
+				dec=int(curr_cmd)
+			)
+
+		# Check if it's a label/variable that already
 		# has an address associated with it
-		if symbolTable.contains(curr_cmd):
+		elif symbolTable.contains(curr_cmd):
 			# The label is already in the symbolTable
-			addr = symbolTable.getAddress(curr_cmd)
-			addr_bin = bin(addr)[2:]
+			addr_dec = symbolTable.getAddress(curr_cmd)
+			addr_bin = parser.convertDecToBin(dec=addr_dec)
 			curr_cmd_bin = addr_bin
 		else:
 			# The label is of a new variable not
@@ -68,22 +83,21 @@ while parser.hasMoreCommands():
 
 			# Calculate the RAM addr of the var
 			i = symbolTable.variablesEncountered
-			addr = 16+i
+			addr_dec = 16 + i
 
 			# Add the variable to the symbolTable
 			symbolTable.add_entry(
 				symbol=curr_cmd,
-				address=addr
+				address=addr_dec
 			)
+			symbolTable.variablesEncountered += 1
 
-			addr_bin = bin(addr)[2:]
+			addr_bin = parser.convertDecToBin(dec=addr_dec)
 			curr_cmd_bin = addr_bin
 
 	# Make sure the curr_cmd_bin is 16 bits long
 	curr_cmd_bin = curr_cmd_bin.zfill(16)
 
 	outFile.write(curr_cmd_bin + '\n')
-	print(parser.curr_cmd)
-	print(parser.commandType(parser.curr_cmd))
-	print(f"Machine language equivalent:   {curr_cmd_bin}")
-	print('__________________')
+	# print(parser.curr_cmd)
+	# print(f"Machine language equivalent:   {curr_cmd_bin}")

@@ -4,7 +4,7 @@ COMMENT = '//'
 
 
 class Parser:
-	def __init__(self, inFile="inFile.vm"):
+	def __init__(self, inFile="inFile.asm"):
 		self.inFile = open(inFile, 'r')
 
 		self.lines = (instr for instr in self.inFile.readlines())

@@ -2,7 +2,7 @@ from Parser import *
 from Codewriter import *
 
 
-parser = Parser(inFile= "inFile.vm")
+parser = Parser(inFile= "inFile.asm")
 cw = Codewriter(outFile="outFile.asm")
 
 parser.fileContainsAnInstr()

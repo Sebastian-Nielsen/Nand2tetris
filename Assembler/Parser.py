@@ -18,7 +18,7 @@ import re
 from Code import compDict, destDict, jumpDict
 
 class Parser:
-	def __init__(self, inFile="inFile.vm"):
+	def __init__(self, inFile="inFile.asm"):
 		self.file = open(inFile, 'r')
 		self.curr_cmd = None
 		self.next_cmd = None
@@ -69,11 +69,6 @@ class Parser:
 		else:
 			raise ValueError('Unknown cmd encountered')
 
-	def symbol(self):
-		"""
-		:return
-		"""
-
 	def get_dest_bin(self, c_instr: str) -> str:
 		"""Takes a >CLEAN< c-instruction (no 
 		whitespace and stripped()) as input
@@ -103,7 +98,7 @@ class Parser:
 		comp_part_bin:  |'0011111'|'1110010'|
 		"""
 		matches = re.search(
-			r'(?:(.*= *)?)([\w+-]*)((?: *;.*)?)',
+			r'(.*= *)?([\w+!&|-]*)( *;.*)?',
 			c_instr
 		)
 		# We only care about the second capture,
@@ -145,8 +140,22 @@ class Parser:
 		self.next_label = self.getNextCmd()
 		return bool(self.next_cmd)
 
-	def getNextLabel(self, ):
-		...
+	def convertDecToBin(self, dec: int) -> str:
+		return bin(dec)[2:]
+
+	def removeCommentsAndStrip(self, line: str) -> str:
+		"""Removes label and all comments on a line,
+		and strip() the line.
+		:return line [str]
+		"""
+		if line.startswith('('):
+			# The line contains a label
+			return ''
+
+		line = line.split('//')[0] #Remove inline comment
+		line = line.strip()
+		return line
+
 	### API END
 	###########
 	def getNextCmd(self):
@@ -195,18 +204,6 @@ class Parser:
 		else:
 			return line
 
-	def removeCommentsAndStrip(self, line: str) -> str:
-		"""Removes label and all comments on a line,
-		and strip() the line.
-		:return line [str]
-		"""
-		if line.startswith('('):
-			# The line contains a label
-			return ''
-
-		line = line.split('//')[0] #Remove inline comment
-		line = line.strip()
-		return line
 
 
 
