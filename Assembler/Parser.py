@@ -25,6 +25,11 @@ class Parser:
 
 	#######
 	### API
+	def resetFile(self):
+		"""Resets the 'cursor reader position'
+		to the start of the file.
+		"""
+		self.file.seek(0)
 
 	def hasMoreCommands(self) -> bool:
 		"""
@@ -72,28 +77,68 @@ class Parser:
 			raise ValueError('Unknown cmd encountered')
 
 	def symbol(self):
-		...
+		"""
+		:return
+		"""
 
-	def dest(self, c_instr: str) -> str:
-		try:
-			dest = re.search(r'(?:(.*= *)?)(\w*)(?:( *;.*)?)')
-		except:
-			...
+	def get_dest_bin(self, c_instr: str) -> str:
+		"""Takes a >CLEAN< c-instruction (no 
+		whitespace and stripped()) as input
+		and returns the binary machine language
+		equivalent of the dest part. Example:
+		c_instr:       |'M=D+1'  |'M-1;JGT'|
+		dest_part:     |'M'      |'null'   |
+		dest_part_bin: |'001'    |'000'    |
+		"""
+		if ('=' in c_instr):
+			dest_part = c_instr.split('=')[0]
+		else:
+			dest_part = 'null'
 
+		# Look up the binary representation of
+		# the dest_part.
+		dest_part_bin = destDict[dest_part]
+		return dest_part_bin
 
-	def comp(self, c_instr: str) -> str:
-		"""Takes a c-instruction as input
+	def get_comp_bin(self, c_instr: str) -> str:
+		"""Takes a >CLEAN< c-instruction (no 
+		whitespace and stripped()) as input
 		and returns the binary machine language
 		equivalent of the comp part. Example:
-		c_instr:  'M=D'
-		comp:
+		c_instr:        |'M=D+1'  |'M-1;JGT'|
+		comp_part:      |'D+1'    |'M-1'    |
+		comp_part_bin:  |'0011111'|'1110010'|
 		"""
-		comp_part = re.search(r'(\w*) *=', c_instr)
-		return compDict(c_instr[3:10])
+		matches = re.search(
+			r'(?:(.*= *)?)([\w+-]*)((?: *;.*)?)',
+			c_instr
+		)
+		# We only care about the second capture,
+		# group, namely, the comp_part.
+		comp_part = matches.group(2)
+		# Look up the binary representation of
+		# the comp_part
+		comp_part_bin = compDict[comp_part]
+		return comp_part_bin
 
+	def get_jump_bin(self, c_instr: str) -> str:
+		"""Takes a >CLEAN< c-instruction (no 
+		whitespace and stripped()) as input
+		and returns the binary machine language
+		equivalent of the jump part. Example:
+		c_instr:       |'M=D+1'  |'M-1;JGT'|
+		jump_part:     |'null'   |'JGT'    |
+		jump_part_bin: |'000'    |'001'    |
+		"""
+		if (';' in c_instr):
+			jump_part = c_instr.split(';')[1]
+		else:
+			jump_part = 'null'
 
-	def jump(self, c_instr: str) -> str:
-		return jumpDict(c_instr[13:16])
+		# Look up the binary representation of
+		# the jump_part.
+		jump_part_bin = jumpDict[jump_part]
+		return jump_part_bin
 
 	### API END
 	###########
@@ -154,23 +199,28 @@ class Parser:
 
 
 if __name__ == '__main__':
-	x = Parser()
-	while x.hasMoreCommands():
-		curr_cmd = x.advance()
-		curr_cmdType = x.commandType(curr_cmd)
+	parser = Parser()
+	while parser.hasMoreCommands():
+		# Set 'next_cmd' to 'curr_cmd'
+		curr_cmd = parser.advance()
+		# Get he curr_cmd type
+		curr_cmdType = parser.commandType(curr_cmd)
 
 		if curr_cmdType == 'C_COMMAND':
 			a = '111'
-			b = x.comp(cmd=curr_cmd)
-			c = x.dest(cmd=curr_cmd)
-			d = x.jump(cmd=curr_cmd)
-		if curr_cmdType == 'A_COMMAND':
+			c = parser.get_comp_bin(c_instr=curr_cmd)
+			d = parser.get_dest_bin(c_instr=curr_cmd)
+			j = parser.get_jump_bin(c_instr=curr_cmd)
+			curr_cmd_bin = f"{a}{c}{d}{j}"
+
+		elif curr_cmdType == 'A_COMMAND':
 			...
-		if curr_cmdType == 'L_COMMAND':
+		elif curr_cmdType == 'L_COMMAND':
 			...
 
-		print(x.curr_cmd)
-		print(x.commandType(x.curr_cmd))
+		print(parser.curr_cmd)
+		print(parser.commandType(parser.curr_cmd))
+		print(f"Machine language equivalent:   {curr_cmd_bin}")
 		print('__________________')
 
 """

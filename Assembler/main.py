@@ -7,6 +7,10 @@ from Parser import Parser
 
 p = Parser(inFile="inFile.vm")
 
-while p.hasCommands():
-	p.advance()
-
+"""Phase one
+Remove all comments.
+Add all the labels' linenumber
+to the symbolTable. NOTE:
+Comments and other labels doesn't 
+increase the line number.
+"""
