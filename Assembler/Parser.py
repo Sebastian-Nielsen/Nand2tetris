@@ -25,7 +25,6 @@ class Parser:
 
 	#######
 	### API
-
 	def hasMoreCommands(self) -> bool:
 		"""
 		1. There are more commands;
@@ -49,7 +48,7 @@ class Parser:
 		self.next_cmd = None
 		return self.curr_cmd
 
-	def commandType(self, cmd: str):
+	def commandType(self, cmd: str) -> str:
 		"""Types:
 		1. 'A_COMMAND' for @xxx where
 		xxx is either a symbol or a
@@ -134,7 +133,7 @@ class Parser:
 
 	### API END
 	###########
-	def removeCommentsAndStrip(self, line: str) -> str:
+	def removeLabelsCommentsAndStrip(self, line: str) -> str:
 		"""Removes label and all comments on a line,
 		and strip() the line.
 		:return line [str]
@@ -172,7 +171,7 @@ class Parser:
 				# end of the file
 				return None
 
-			line_cleaned = self.removeCommentsAndStrip(line)
+			line_cleaned = self.removeLabelsCommentsAndStrip(line)
 
 			if line_cleaned == '':
 				# The line doesn't contain any cmd
@@ -180,9 +179,9 @@ class Parser:
 				continue
 
 			# The 'cleaned line' must
-			# a command by now
-			command = line_cleaned
-			return command
+			# be a command
+			cmd = line_cleaned
+			return cmd
 
 	def getNextLine(self) -> str:
 		line = self.file.readline()

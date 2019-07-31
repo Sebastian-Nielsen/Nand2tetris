@@ -1,53 +1,40 @@
 import re
 
-COMMENT = '//'
 
 
 class Parser:
-	def __init__(self, inFile="inFile.asm"):
-		self.inFile = open(inFile, 'r')
-
-		self.lines = (instr for instr in self.inFile.readlines())
+	def __init__(self, inFile="inFile.vm"):
+		self.file = open(inFile, 'r')
+		self.curr_cmd = None
+		self.next_cmd = None
 		self.commands = self.commands_dict()
 
 	#######
 	### API
-	def get_nextIstr(self):
+	def hasMoreCommands(self) -> bool:
 		"""
-		Return: next instruction
-		if no 'next instruction':
-			raise 'StopIteration Error'
+		1. There are more commands;
+		self.curr_cmd is updated
+		:return True
+		2. There are no more commands;
+		self.curr_cmd is None
+		:return False
 		"""
-		# Get next line
-		nextLine = next(self.lines)
-		# Remove comments and strip()
-		# We are either left with nothing '' or
-		# an instruction eg. 'push constant 7'
-		clean_nextLine = self.removeComments(line=nextLine)
+		self.next_cmd = self.getNextCmd()
+		return bool(self.next_cmd)
 
-		while (clean_nextLine == ''):
-			nextLine = next(self.lines)
-			clean_nextLine = self.removeComments(line=nextLine)
-
-		# We are now left with an instruction
-		nextInstr = clean_nextLine
-		return nextInstr
-
-	def fileContainsAnInstr(self):
+	def advance(self):
+		"""Reads the next cmd from the
+		input and makes it the current
+		command. Should be called only
+		if hasMoreCommands() is true.
+		Initially there is no current cmd.
 		"""
-		return: True,  if file contains an instr
-		return: False, if file doesn't contain an instr
-		"""
-		try:
-			print(f"File is not empty, it contains "
-			      f"the instr: {self.get_nextIstr()}\n____")
-			#Reset file reader pointer
-			self.inFile.seek(0)
-			return False
-		except StopIteration:
-			return True
+		self.curr_cmd = self.next_cmd
+		self.next_cmd = None
+		return self.curr_cmd
 
-	def removeCommentsAndStrip(self, line: str) -> str:
+	def removeLabelsCommentsAndStrip(self, line: str) -> str:
 		"""Removes label and all comments on a line,
 		and strip() the line.
 		:return line [str]
@@ -60,11 +47,96 @@ class Parser:
 		line = line.strip()
 		return line
 
+	def commandType(self, cmd: str):
+		"""Types:
+		1. Arithmetic commands - Perform
+		arithmetic and logical operations
+		on the stack.
+		2. Memory access commands - transfer
+		data between the stack and virtual
+		memory segments.
+		3. NOT_YET_ADDED
+		4. NOT_YET_ADDED
+		http://f.javier.io/rep/books/The%20Elements%20of%20Computing%20Systems.pdf
+		page 138
+		"""
+		cmd_arg1 = self.arg1(cmd)
+		cmd_type = self.commands[cmd_arg1]
+		return cmd_type
+
 	### END API
 	###########
-	def removeComments(self, line):
-		line = line.split(COMMENT)[0].strip()
-		return line
+	def arg1(self, cmd: str) -> str:
+		"""Returns the first argument of the
+		current program. Example:
+		cmd = 'push segment i'
+			then,
+		return 'push'
+		"""
+		capture_groups = re.search(r'(\w+) *', cmd)
+		arg1 = capture_groups.group(1)
+		return arg1
+
+	def arg2(self, cmd: str) -> str:
+		"""Returns the second argument of the
+		current program. Example:
+		cmd = 'push segment i'
+			then,
+		return 'segment'
+		_________________
+		Method should only be called if the
+		cmdType of the cmd argument is either
+		C_PUSH, C_POP, C_FUNCTION or C_CALL.
+		"""
+		capture_groups = re.search(r'\w+ *(\w+)', cmd)
+		arg2 = capture_groups.group(1)
+		return arg2
+
+	def getNextCmd(self):
+		"""
+		Who calls this method?
+		-> hasMoreCommands(self)
+		_______DESCRIP________
+		Read lines continuesly until
+		a cmd is found or the end of
+		the file is reached.
+		______________________
+		If cmd found:
+			self.next_cmd = cmd
+			:return cmd
+		else:
+			# End of file reached
+			self.next_cmd = None
+			:return None
+		"""
+		while True:
+			line = self.getNextLine()
+
+			if line is None:
+				# We have reached the
+				# end of the file
+				return None
+
+			line_cleaned = self.removeLabelsCommentsAndStrip(line)
+
+			if line_cleaned == '':
+				# The line doesn't contain any cmd
+				# Repeat the loop -> get a new line
+				continue
+
+			# The 'cleaned line' must
+			# be a command
+			cmd = line_cleaned
+			return cmd
+
+	def getNextLine(self) -> str:
+		line = self.file.readline()
+		if line == '':
+			# We have reached the
+			# end of the file
+			return None
+		else:
+			return line
 
 	def commands_dict(self):
 		return {
@@ -86,12 +158,3 @@ class Parser:
 			'return': 'C_RETURN',
 			'call': 'C_CALL'
 		}
-
-
-if __name__ == '__main__':
-	parser = Parser()
-
-
-
-
-

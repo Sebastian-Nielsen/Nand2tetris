@@ -21,7 +21,7 @@ def first_pass(file):
 				symbol=label,
 				address=lineNumber
 			)
-		elif parser.removeCommentsAndStrip(line=line) != '':
+		elif parser.removeLabelsCommentsAndStrip(line=line) != '':
 			lineNumber += 1
 	# Remember to reset the file reader cursor
 	file.seek(0)
