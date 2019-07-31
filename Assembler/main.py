@@ -1,6 +1,7 @@
 from SymbolTable import SymbolTable
 from Parser import Parser
 import re
+
 def first_pass(file):
 	""":param Takes a file that is
 	already opened in read mode.
@@ -25,6 +26,51 @@ def first_pass(file):
 	# Remember to reset the file reader cursor
 	file.seek(0)
 	return
+def translate_Ainstr_to_bin(a_instr: str) -> str:
+	"""Takes an a-instruction as input. Sample inputs:
+	:param '@xxx' (Look up associated address of the xxx
+								 in the symbolTable and load it to the
+								 A-register)
+	:param '@204' (Load the constant to the A-register)
+	:return 'binary representation of the a-instruction'
+	"""
+	# Remove '@'
+	a_instr = a_instr[1:]
+
+	if re.search(r'^[0-9]+$', a_instr):
+		# a_instr is equal to a dec, eg. '@17'
+		addr_dec = int(a_instr)
+		addr_bin = parser.convertDecToBin(addr_dec)
+		return addr_bin
+
+	# Check if the label (@xxx) the xxx part already
+	# has an address associated with it.
+	if symbolTable.contains(a_instr):
+		# The label is already in the symbolTable
+		addr_dec = symbolTable.getAddress(a_instr)
+		addr_bin = parser.convertDecToBin(addr_dec)
+		return addr_bin
+
+	else:
+		# The label xxx from the a-instr '@xxx'
+		# is not yet in the symbol table.
+		# Add it to the symbol table, it must
+		# a new variable!
+
+		# Calculate the RAM addr of the var
+		i = symbolTable.variablesEncountered
+		addr_dec = 16 + i
+
+		# Add the variable to the symbolTable
+		symbolTable.add_entry(
+			symbol=a_instr,   # eg. 'varName'
+			address=addr_dec  # eg.    16
+		)
+		symbolTable.variablesEncountered += 1
+
+		addr_bin = parser.convertDecToBin(addr_dec)
+		return addr_bin
+
 
 """
 main.py drives the entire
@@ -33,7 +79,6 @@ assembler.
 """
 parser = Parser(inFile="inFile.asm")
 symbolTable = SymbolTable()
-
 
 #############
 # FIRST PHASE
@@ -54,45 +99,11 @@ while parser.hasMoreCommands():
 		d = parser.get_dest_bin(c_instr=curr_cmd)
 		j = parser.get_jump_bin(c_instr=curr_cmd)
 		curr_cmd_bin = f"{a}{c}{d}{j}"
-
 	elif curr_cmdType == 'A_COMMAND':
-		# Remove '@'
-		curr_cmd = curr_cmd[1:]
-
-		# If it's a decimal; convert it to bin
-		if re.search(r'^[0-9]+$', curr_cmd):
-			curr_cmd_bin = parser.convertDecToBin(
-				dec=int(curr_cmd)
-			)
-
-		# Check if it's a label/variable that already
-		# has an address associated with it
-		elif symbolTable.contains(curr_cmd):
-			# The label is already in the symbolTable
-			addr_dec = symbolTable.getAddress(curr_cmd)
-			addr_bin = parser.convertDecToBin(dec=addr_dec)
-			curr_cmd_bin = addr_bin
-		else:
-			# The label is of a new variable not
-			# yet added to the symbolTable.
-
-			# Calculate the RAM addr of the var
-			i = symbolTable.variablesEncountered
-			addr_dec = 16 + i
-
-			# Add the variable to the symbolTable
-			symbolTable.add_entry(
-				symbol=curr_cmd,
-				address=addr_dec
-			)
-			symbolTable.variablesEncountered += 1
-
-			addr_bin = parser.convertDecToBin(dec=addr_dec)
-			curr_cmd_bin = addr_bin
+		curr_cmd_bin = translate_Ainstr_to_bin(a_instr=curr_cmd)
 
 	# Make sure the curr_cmd_bin is 16 bits long
 	curr_cmd_bin = curr_cmd_bin.zfill(16)
 
 	outFile.write(curr_cmd_bin + '\n')
-	# print(parser.curr_cmd)
-	# print(f"Machine language equivalent:   {curr_cmd_bin}")
+

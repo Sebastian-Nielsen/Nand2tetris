@@ -10,6 +10,10 @@ class SymbolTable:
 			'ARG': 2,  # Argument (variable)
 			'THIS': 3,
 			'THAT': 4,
+			# 'R0': 0,
+			# 'R1': 1,
+			#   ...
+			# 'R15': 15,
 			'SCREEN': 16384,
 			'KBD': 24576
 		}
