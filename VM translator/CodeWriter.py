@@ -11,106 +11,26 @@ class CodeWriter:
 		translation of the given arithmetic cmd.
 		:param command (string),
 		"""
+		self.pop_stack_into_D() # Top value of stack
+		if command not in ('neg', 'not'):
+			self.pop_stack_into_A() # Second value of stack
+
 		if command == 'add':
-			self.write(f"////////////////////")
-			self.write(f"// add")
-			# After 'self.pop_stack_twice()'
-			# SP = SP - 2
-			# RAM[13] = top    stack value
-			# D       = second stack value
-			self.pop_stack_twice()
-			# Add RAM[13] and D
-			self.write(f"@R13     ")
-			self.write(f"D=D+M    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write("D=A+D")
 		elif command == 'sub':
-			self.write(f"////////////////////")
-			self.write(f"// sub")
-			# After 'self.pop_stack_twice()'
-			# SP = SP - 2
-			# RAM[13] = top    stack value
-			# D       = second stack value
-			self.pop_stack_twice()
-			# sub RAM[13] from D
-			self.write(f"@R13     ")
-			self.write(f"D=D-M    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write('D=A-D')
 		elif command == 'neg':
-			self.write(f"////////////////////")
-			self.write(f"// neg")
-			# After 'self.pop_stack_into_D()'
-			# SP = SP - 1
-			# D = top stack value
-			self.pop_stack_into_D()
-			# Negate 'D' -> sub D from 0
-			self.write(f"D=-D    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write('D=-D')
 		elif command == 'and':
-			self.write(f"////////////////////")
-			self.write(f"// and")
-			# After 'self.pop_stack_twice()'
-			# SP = SP - 2
-			# RAM[13] = top    stack value
-			# D       = second stack value
-			self.pop_stack_twice()
-			# and "RAM[13] og D"
-			self.write(f"@R13     ")
-			self.write(f"D=D&M    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write('D=A&D')
 		elif command == 'or':
-			self.write(f"////////////////////")
-			self.write(f"// or")
-			# After 'self.pop_stack_twice()'
-			# SP = SP - 2
-			# RAM[13] = top    stack value
-			# D       = second stack value
-			self.pop_stack_twice()
-			# or "RAM[13] og D"
-			self.write(f"@R13     ")
-			self.write(f"D=D|M    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write('D=A|D')
 		elif command == 'not':
-			self.write(f"////////////////////")
-			self.write(f"// not")
-			# After 'self.pop_stack_twice()'
-			# SP = SP - 2
-			# RAM[13] = top    stack value
-			# D       = second stack value
-			self.pop_stack_into_D()
-			# perform 'not' on "D"
-			self.write(f"@R13    ")
-			self.write(f"D=!D    ")
-			# Push 'D' to the stack
-			# (wherever the SP points to)
-			self.write(f"@SP     ")
-			self.write(f"A=M     ")
-			self.write(f"M=D     ")
-			self.increment_SP()
+			self.write('D=!D')
+
+		# 'self.push_from_D_to_stack()' also
+		# takes care of incrementing SP
+		self.push_from_D_to_stack()
 
 	def write_push_pop(self, command, segment, i):
 		"""
@@ -219,6 +139,15 @@ class CodeWriter:
 		self.write("M=M-1  //SP--")
 		self.write(f"A=M         ")
 		self.write(f"D=M  //D=*SP")
+
+	def pop_stack_into_A(self):
+		"""Decrements @SP;
+		pop from stack into A
+		"""
+		self.write("@SP          ")
+		self.write("M=M-1  //SP--")
+		self.write(f"A=M         ")
+		self.write(f"A=M  //D=*SP")
 
 	def push_from_D_to_stack(self):
 		"""Push the value of D to the stack;
