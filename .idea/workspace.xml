@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f50de58f-5ba1-4707-a10a-14c89b4f4c62" name="Default Changelist" comment="Default Changelist">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/SymbolTable.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/outFile.hack" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -239,7 +236,8 @@
       <workItem from="1564482951922" duration="2173000" />
       <workItem from="1564493390695" duration="14170000" />
       <workItem from="1564520656219" duration="1989000" />
-      <workItem from="1564567127891" duration="1295000" />
+      <workItem from="1564567127891" duration="1582000" />
+      <workItem from="1564578963825" duration="597000" />
     </task>
     <servers />
   </component>
