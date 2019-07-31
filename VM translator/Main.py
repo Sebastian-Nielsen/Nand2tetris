@@ -17,6 +17,9 @@ while parser.hasMoreCommands():
 			segment=curr_cmdArgs[1],
 			i=curr_cmdArgs[2]
 		)
+	elif curr_cmdType == 'C_ARITHMETIC':
+		cw.writeArithmetic(command=curr_cmd)
+
 
 	print('____________')
 	print(curr_cmd)
