@@ -12,12 +12,12 @@ class CodeWriter:
 		:param command (string),
 		"""
 		if command == 'add':
-			self.write_pop_stack_into_D()
-			self.write(f"                    ")
-			self.write(f"                    ")
-			self.write(f"                    ")
-			self.write(f"                    ")
-			self.write(f"                    ")
+			# After 'self.pop_stack_twice()'
+			# SP = SP - 2
+			# RAM[13] = top    stack value
+			# D       = second stack value
+			self.pop_stack_twice()
+
 
 	def write_push_pop(self, command, segment, i):
 		"""
@@ -61,7 +61,7 @@ class CodeWriter:
 		elif command == 'C_POP':
 			self.write(f"////////////////////")
 			self.write(f"//pop {segment} {i} ")
-			self.write_pop_stack_into_D()
+			self.pop_stack_into_D()
 			self.write(f"@R13                ")
 			self.write(f"M=D   // M[13]=D    "
 			           f"// store popped value"
@@ -118,12 +118,33 @@ class CodeWriter:
 		self.write("M=M-1  //SP--")
 		self.write("             ")
 		
-	def write_pop_stack_into_D(self):
+	def pop_stack_into_D(self):
 		"""Decrement SP; Pop from stack
 		into D-register
 		"""
 		self.write("@SP          ")
-		self.write("M=M-1  //SP++")
+		self.write("M=M-1  //SP--")
+		self.write(f"@SP         ")
+		self.write(f"A=M         ")
+		self.write(f"D=M  //D=*SP")
+
+	def pop_stack_twice(self):
+		"""
+		Decrement SP;
+		Pop from stack into @R13;
+		Decrement SP;
+		Pop from stack into D;
+		________ :RESULT: _________
+		RAM[13] = top    stack value
+		D       = second stack value
+		"""
+		self.write_decrement_SP()
+		self.write(f"@SP         ")
+		self.write(f"A=M         ")
+		self.write(f"D=M  //D=*SP")
+		self.write(f"@R13        ")
+		self.write(f"M=D         ")
+		self.write_decrement_SP()
 		self.write(f"@SP         ")
 		self.write(f"A=M         ")
 		self.write(f"D=M  //D=*SP")
