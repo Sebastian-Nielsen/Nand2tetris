@@ -38,12 +38,12 @@ def translate_Ainstr_to_bin(a_instr: str) -> str:
 	a_instr = a_instr[1:]
 
 	if re.search(r'^[0-9]+$', a_instr):
-		# a_instr is equal to a dec, eg. '@17'
+		# a_instr is equal to a dec; eg. '@17'
 		addr_dec = int(a_instr)
 		addr_bin = parser.convertDecToBin(addr_dec)
 		return addr_bin
 
-	# Check if the label (@xxx) the xxx part already
+	# Check if the label '@xxx' the xxx part already
 	# has an address associated with it.
 	if symbolTable.contains(a_instr):
 		# The label is already in the symbolTable
@@ -55,7 +55,7 @@ def translate_Ainstr_to_bin(a_instr: str) -> str:
 		# The label xxx from the a-instr '@xxx'
 		# is not yet in the symbol table.
 		# Add it to the symbol table, it must
-		# a new variable!
+		# be a new variable!
 
 		# Calculate the RAM addr of the var
 		i = symbolTable.variablesEncountered
