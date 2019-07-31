@@ -47,6 +47,19 @@ class Parser:
 		except StopIteration:
 			return True
 
+	def removeCommentsAndStrip(self, line: str) -> str:
+		"""Removes label and all comments on a line,
+		and strip() the line.
+		:return line [str]
+		"""
+		if line.startswith('('):
+			# The line contains a label
+			return ''
+
+		line = line.split('//')[0] #Remove inline comment
+		line = line.strip()
+		return line
+
 	### END API
 	###########
 	def removeComments(self, line):
@@ -76,12 +89,8 @@ class Parser:
 
 
 if __name__ == '__main__':
-	t = Parser()
-	try:
-		while True:
-			print(f"'{t.get_nextIstr()}'")
-	except StopIteration:
-		print('got a stop iteration error')
+	parser = Parser()
+
 
 
 
