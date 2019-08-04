@@ -4,16 +4,15 @@ import sys
 
 # Don't include the file name of the currently
 # running file, namely, "..fullPath../main.py"
-args = sys.argv[1:]
-print(args)
-exit()
+# args = sys.argv[1:]
+# print(args)
+# exit()
 
-parser = Parser(inFile ="inFile.vm")
+parser = Parser(inFile ="inFile.vm"  )
 cw = CodeWriter(outFile="outFile.asm")
 
 
 while parser.hasMoreCommands():
-	# Set 'next_cmd' to 'curr_cmd'
 	curr_cmd = parser.advance()
 	curr_cmdType = parser.commandType(curr_cmd)
 

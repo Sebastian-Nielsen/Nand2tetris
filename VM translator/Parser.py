@@ -1,6 +1,4 @@
 import re
-
-
 class Parser:
 	def __init__(self, inFile="inFile.vm"):
 		self.file = open(inFile, 'r')
@@ -12,31 +10,21 @@ class Parser:
 	#######
 	### API
 	def hasMoreCommands(self) -> bool:
-		"""
-		1. There are more commands;
-		self.curr_cmd is updated
-		:return True
-		2. There are no more commands;
-		self.curr_cmd is None
-		:return False
-		"""
-		self.next_cmd = self.getNextCmd()
 		return bool(self.next_cmd)
 
 	def advance(self):
-		"""Reads the next cmd from the
-		input and makes it the current
-		command. Should be called only
-		if hasMoreCommands() is true.
+		"""The next cmd is now the current.
+		Should be called only if hasMoreCommands()
+		is true.
 		Initially there is no current cmd.
 		"""
 		self.curr_cmd = self.next_cmd
-		self.next_cmd = None
+		self.next_cmd = self.getNextCmd()
 		return self.curr_cmd
 
 	def removeCommentsAndStrip(self, line: str) -> str:
-		"""Removes label and all comments on a line,
-		and strip() the line.
+		"""Remove all comments in the given line;
+		strip() the line.
 		:return line [str]
 		"""
 		line = line.split('//')[0] #Remove inline comment
@@ -94,11 +82,8 @@ class Parser:
 		the file is reached.
 		______________________
 		If cmd found:
-			self.next_cmd = cmd
 			:return cmd
-		else:
-			# End of file reached
-			self.next_cmd = None
+		else: # End of file reached
 			:return None
 		"""
 		while True:
