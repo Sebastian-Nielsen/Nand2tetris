@@ -1,13 +1,13 @@
 import re
 
 
-
 class Parser:
 	def __init__(self, inFile="inFile.vm"):
 		self.file = open(inFile, 'r')
-		self.curr_cmd = None
-		self.next_cmd = None
 		self.commands = self.commands_dict()
+
+		self.curr_cmd = None
+		self.next_cmd = self.getNextCmd()
 
 	#######
 	### API
@@ -34,15 +34,11 @@ class Parser:
 		self.next_cmd = None
 		return self.curr_cmd
 
-	def removeLabelsCommentsAndStrip(self, line: str) -> str:
+	def removeCommentsAndStrip(self, line: str) -> str:
 		"""Removes label and all comments on a line,
 		and strip() the line.
 		:return line [str]
 		"""
-		if line.startswith('('):
-			# The line contains a label
-			return ''
-
 		line = line.split('//')[0] #Remove inline comment
 		line = line.strip()
 		return line
@@ -93,11 +89,7 @@ class Parser:
 		return arg2
 
 	def getNextCmd(self):
-		"""
-		Who calls this method?
-		-> hasMoreCommands(self)
-		_______DESCRIP________
-		Read lines continuesly until
+		"""Read lines from file until
 		a cmd is found or the end of
 		the file is reached.
 		______________________
@@ -110,33 +102,22 @@ class Parser:
 			:return None
 		"""
 		while True:
-			line = self.getNextLine()
+			line = self.file.readline()
 
-			if line is None:
-				# We have reached the
-				# end of the file
+			if line == '':
+				# End of the file reached
 				return None
 
-			line_cleaned = self.removeLabelsCommentsAndStrip(line)
+			line_cleaned = self.removeCommentsAndStrip(line)
 
 			if line_cleaned == '':
-				# The line doesn't contain any cmd
-				# Repeat the loop -> get a new line
+				# The line doesn't contain any cmd.
+				# Repeat the loop -> Get a new line.
 				continue
 
-			# The 'cleaned line' must
-			# be a command
+			# The 'cleaned line' contains a cmd
 			cmd = line_cleaned
 			return cmd
-
-	def getNextLine(self) -> str:
-		line = self.file.readline()
-		if line == '':
-			# We have reached the
-			# end of the file
-			return None
-		else:
-			return line
 
 	def commands_dict(self):
 		return {

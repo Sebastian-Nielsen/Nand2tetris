@@ -1,5 +1,12 @@
 from Parser import Parser
 from CodeWriter import CodeWriter
+import sys
+
+# Don't include the file name of the currently
+# running file, namely, "..fullPath../main.py"
+args = sys.argv[1:]
+print(args)
+exit()
 
 parser = Parser(inFile ="inFile.vm")
 cw = CodeWriter(outFile="outFile.asm")
