@@ -6,27 +6,27 @@ class CodeWriter:
 
 	#######
 	### API
-	def writeArithmetic(self, command: str):
+	def writeArithmetic(self, cmd: str):
 		"""
 		Writes the assembly code that is the
 		translation of the given arithmetic cmd.
-		:param command (string),
+		:param cmd (string),
 		"""
 		self.write(f"////////////////////")
-		self.write(f"//{command}")
+		self.write(f"//{cmd}")
 
 		self.pop_stack_into_D()  # Top value of stack (y) (D)
-		if command not in ('neg', 'not'):
+		if cmd not in ('neg', 'not'):
 			self.pop_stack_into_A()  # Second value of stack (x) (A)
 
-		if command == 'add':  # Arithmetic operators
+		if cmd == 'add':  # Arithmetic operators
 			self.write("D=A+D")
-		elif command == 'sub':
+		elif cmd == 'sub':
 			self.write('D=A-D')
-		elif command == 'neg':
+		elif cmd == 'neg':
 			self.write('D=-D')
 
-		elif command in ('lt', 'eq', 'gt'):  # Boolean operators
+		elif cmd in ('lt', 'eq', 'gt'):  # Boolean operators
 			############# Remember #############
 			# Top    value of stack (y) or (D) #
 			# Second value of stack (x) or (A) #
@@ -35,11 +35,11 @@ class CodeWriter:
 			i = self.boolean_count
 			self.write(f"@Bool_{i}_TRUE")
 
-			if command == 'lt':  # (x < y) aka (x-y < 0)
+			if cmd == 'lt':  # (x < y) aka (x-y < 0)
 				self.write("D;JLT")
-			elif command == 'eq':  # (x==y) aka (x-y==0)
+			elif cmd == 'eq':  # (x==y) aka (x-y==0)
 				self.write("D;JEQ")
-			elif command == 'gt':  # (x > y) aka (x-y > 0)
+			elif cmd == 'gt':  # (x > y) aka (x-y > 0)
 				self.write("D;JGT")
 
 			self.write(f"D=0             ")
@@ -50,18 +50,18 @@ class CodeWriter:
 			self.write(f"(Bool_{i}_FALSE)")
 			self.boolean_count += 1
 
-		elif command == 'and':
+		elif cmd == 'and':
 			self.write('D=A&D')
-		elif command == 'or':
+		elif cmd == 'or':
 			self.write('D=A|D')
-		elif command == 'not':
+		elif cmd == 'not':
 			self.write('D=!D')
 
 		# 'self.push_from_D_to_stack()' also
 		# takes care of incrementing SP
 		self.push_from_D_to_stack()
 
-	def write_push_pop(self, command, segment, i):
+	def writePushPop(self, command, segment, i):
 		"""
 		Writes the assembly code that implements
 		the given command to the output file,
@@ -70,12 +70,13 @@ class CodeWriter:
 		:param command (C_PUSH or C_POP),
 		:param segment (string),
 		:param i for index (int)
-		"""
+		________Example_________
 		## 'push constant 2' ##
 		# command: 'C_PUSH'   #
 		# segment: 'constant' #
 		# index: 2            #
 		#######################
+		"""
 		if command == 'C_PUSH':
 			if segment == 'constant':
 				self.write(f"////////////////////")
@@ -96,8 +97,8 @@ class CodeWriter:
 				self.resolve_address(segment)
 
 				self.write(f"@{i}                ")
-				self.write(f"A=D+A //D=segment+i ")  # D=300
-				self.write(f"D=M                 ")  # D= R[300]
+				self.write(f"A=D+A //D=segment+i ")
+				self.write(f"D=M                 ")
 				self.write(f"                    ")
 				self.write(f"@SP                 ")
 				self.write(f"A=M                 ")
@@ -108,30 +109,64 @@ class CodeWriter:
 			self.write(f"////////////////////")
 			self.write(f"//pop {segment} {i} ")
 
-			# SP--; D=*SP
+			#######################################
+			# PSEUDO ASSEMBLY:   SP--; D=*SP      #
+			#######################################
 			self.pop_stack_into_D()
-
-			self.write(f"@R13                ")
-			self.write(f"M=D                 "
-			           "// store popped value"
-			           " temporarily in R13  ")
-
-			self.write(f"@{self.addresses[segment]}"
-			           f"  //eg. LOCAL=>@LCL=>@1   ")
-
+			# Store popped value temporarily in R13
+			self.write(f"@R13")
+			self.write(f"M=D ")
+			# Eg. LOCAL=>@LCL=>@1
+			self.write(f"@{self.addresses[segment]}")
 			self.resolve_address(segment)
-
-			self.write(f"@{i}                ")
-			self.write(f"D=D+A  //D = address of '{segment} {i}'")
-			self.write(f"@R14                ")
-			self.write(f"M=D                 ")
-			self.write(f"@R13                ")
-			self.write(f"D=M                 ")
-			self.write(f"@R14                ")
-			self.write(f"A=M                 ")
-			self.write(f"M=D                 ")
+			self.write(f"@{i}")
+			self.write(f"D=D+A   //D=address of {segment} {i}")
+			self.write(f"@R14")
+			self.write(f"M=D ")
+			self.write(f"@R13")
+			self.write(f"D=M ")
+			self.write(f"@R14")
+			self.write(f"A=M ")
+			self.write(f"M=D ")
 		else:
 			self.raise_unknown(command)
+
+	def writeLabel(self, cmd):
+		"""Given a vm cmd, like:
+		cmd = 'label LOOP_START'
+		write the assembly equivalent
+		to the asm file:
+		(LOOP_START)
+		"""
+		args = cmd.split(' ')
+		labelName = args[1]
+		self.write(f"////////////////////")
+		self.write(f"// {cmd}")
+		self.write(f"({labelName})")
+
+	def writeGoto(self, cmd):
+		"""
+		"""
+		args = cmd.split(' ')
+		labelName = args[1]
+		self.write(f"////////////////////")
+		self.write(f"// {cmd}")
+		self.write(f"@{labelName}")
+		self.write('0;JMP')
+
+	def writeIfgoto(self, cmd):
+		"""The stacks topmost value is popped; if the
+		value is not zero, execution continues from the
+		location marked by the label; otherwise, execution
+		continues from the next command in the program.
+		"""
+		args = cmd.split(' ')
+		labelName = args[1]
+		self.write(f"////////////////////")
+		self.write(f"// {cmd}    ")
+		self.pop_stack_into_D()
+		self.write(f"@{labelName}")
+		self.write(f"D;JNE       ")
 
 	def close(self):
 		self.file.close()
@@ -188,16 +223,12 @@ class CodeWriter:
 		raise ValueError(f"{command} is an invalid argument")
 
 	def increment_SP(self):
-		self.write("             ")
 		self.write("@SP          ")
 		self.write("M=M+1  //SP++")
-		self.write("             ")
 
 	def decrement_SP(self):
-		self.write("             ")
 		self.write("@SP          ")
 		self.write("M=M-1  //SP--")
-		self.write("             ")
 
 	def pop_stack_into_D(self):
 		"""Decrements @SP;
