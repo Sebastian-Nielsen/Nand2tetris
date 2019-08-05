@@ -168,6 +168,28 @@ class CodeWriter:
 		self.write(f"@{labelName}")
 		self.write(f"D;JNE       ")
 
+	def writeFunction(self, functionName: str, numLocals: int):
+		"""Given a command like:
+		function Foo.main 4
+		function {functionName} {numLocals}
+		"""
+		self.write(f"////////////////////")
+		self.write(f"// function {functionName} {numLocals}")
+		self.write(f"({functionName})")
+		# Handle the setting up of a function's execution
+
+		self.write()
+
+	def writeCall(self, functionName: str, numArgs: int):
+		"""Given a command like:
+		call Bar.mult 2
+		call {functionName} {numArgs}
+		"""
+		self.write(f"////////////////////")
+		self.write(f"// function {functionName} {numArgs}")
+		# We
+
+
 	def close(self):
 		self.file.close()
 
