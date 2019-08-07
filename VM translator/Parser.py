@@ -9,8 +9,8 @@ class Parser:
 	white spaces and comments.
 	"""
 
-	def __init__(self, inFile="inFile.vm"):
-		self.file = open(inFile, 'r')
+	def __init__(self, inFile="inFile"):
+		self.file = open(f"{inFile}.vm", 'r')
 		self.commands = self.commands_dict()
 
 		self.curr_cmd = None

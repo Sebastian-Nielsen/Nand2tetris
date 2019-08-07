@@ -3,16 +3,17 @@ from CodeWriter import CodeWriter
 import sys
 from time import sleep
 
+
 def translate(filename):
 	"""Given the filename of a single file,
 	translate the vm commands into Hack
 	assembly code and write it to an .asm file.
 	"""
-	parser = Parser(inFile =f"{filename}.vm" )
-	cw = CodeWriter(outFile=f"{filename}.asm")
+	parser = Parser(inFile=filename)  # Input file is a .vm file
+	cw = CodeWriter(outFile=filename)  # Outputs to -> {filename}.asm
 
 	while parser.hasMoreCommands():
-		curr_cmd     = parser.advance()
+		curr_cmd = parser.advance()
 		curr_cmdType = parser.commandType(curr_cmd)
 
 		if curr_cmdType in ('C_PUSH', 'C_POP'):
@@ -31,12 +32,16 @@ def translate(filename):
 		elif curr_cmdType == 'C_IF':
 			cw.writeIfgoto(cmd=curr_cmd)
 		elif curr_cmdType == 'C_FUNCTION':
-			...
+			# Eg. 'function SimpleFunction.test 2'
+			curr_cmdArgs = curr_cmd.split(' ')
+			cw.writeFunction(
+				functionName=curr_cmdArgs[1],
+				numLocals=int(curr_cmdArgs[2])
+			)
 		elif curr_cmdType == 'C_RETURN':
-			...
+			cw.writeReturn()
 		elif curr_cmdType == 'C_CALL':
 			...
-
 
 		print('____________')
 		print(curr_cmd)
@@ -61,5 +66,3 @@ else:
 	filepath = arg_1
 	exit('A filepath is supplied, what now? ... :)')
 	...
-
-

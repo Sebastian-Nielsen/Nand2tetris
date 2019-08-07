@@ -1,4 +1,21 @@
 ////////////////////
+// function SimpleFunction.test 2
+(file.SimpleFunction.test)
+@0 
+D=A
+@SP        
+A=M        
+M=D //*SP=D
+@SP          
+M=M+1  //SP++
+@0 
+D=A
+@SP        
+A=M        
+M=D //*SP=D
+@SP          
+M=M+1  //SP++
+////////////////////
 //push local 0
 @LCL
 D=M   // baseAddr of local

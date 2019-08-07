@@ -1,8 +1,23 @@
 class CodeWriter:
-	def __init__(self, outFile="outFile.asm"):
-		self.file = open(outFile, 'w')
+	def __init__(self, outFile="outFile"):
+		self.file = open(f"{outFile}.asm", 'w')
+		self.filename = outFile
 		self.addresses = self.address_dict()
 		self.boolean_count = 0
+		self.returnAddr_count = 0
+
+	def writeInit(self):
+		"""
+		The first VM function that starts executing
+		should be sys.init.
+		1. Initialize the stack pointer to addr 256
+		2. Starts executing (the translated code of) sys.init
+		"""
+		self.write('@256')
+		self.write('D=A')
+		self.write('@SP')
+		self.write('M=D')
+		self.writeCall('sys.init', numArgs=0)
 
 	#######
 	### API
@@ -57,9 +72,9 @@ class CodeWriter:
 		elif cmd == 'not':
 			self.write('D=!D')
 
-		# 'self.push_from_D_to_stack()' also
+		# 'self.push_D_to_stack()' also
 		# takes care of incrementing SP
-		self.push_from_D_to_stack()
+		self.push_D_to_stack()
 
 	def writePushPop(self, command, segment, i):
 		"""
@@ -146,6 +161,7 @@ class CodeWriter:
 
 	def writeGoto(self, cmd):
 		"""
+		'goto returnAddress'
 		"""
 		args = cmd.split(' ')
 		labelName = args[1]
@@ -175,20 +191,123 @@ class CodeWriter:
 		"""
 		self.write(f"////////////////////")
 		self.write(f"// function {functionName} {numLocals}")
-		self.write(f"({functionName})")
-		# Handle the setting up of a function's execution
+		# Declaress a label for the function entry
+		self.write(f"({self.filename}.{functionName})")
+		# nVars = number of local variables
+		# Initializes the local variables to 0
+		for _ in range(numLocals):
+			self.write('@0 ')  # 'Push 0'
+			self.write('D=A')
+			self.push_D_to_stack()
 
-		self.write()
+	def writeReturn(self):
+		"""
+		endFrame=LCL
+		*ARG=pop()
+		SP=ARG+1
+		THAT=*(endFrame-1)
+		THIS=*(endFrame-2)
+		ARG =*(endFrame-3)
+		LCL =*(endFrame-4)
+		retAddr=*(endFrame-5)
+		goto retAddr
+		"""
+		### endFrame=LCL
+		# create a temporary variable 'endFrame'
+		self.write(f"@LCL")
+		self.write(f"D=M")
+		self.write(f"@endFrame")
+		self.write(f"M=D")  # endFrame=LCL
+
+		for i, addr in enumerate(
+				('@THAT', '@THIS', '@ARG', '@LCL'),
+				1):
+			### {addr}=*(endFrame-{i})
+			# Restore {addr} of the caller
+			self.write(f"@endFrame")
+			self.write(f"D=A")
+			self.write(f"@{i}")
+			self.write(f"D=D-A")  # D=(endFrame-{i})
+			self.write(f"A=D")  # A=(endFrame-{i})
+			self.write(f"A=M")
+			self.write(f"D=M")  # D=*(endFrame-{i})
+			self.write(f"@THAT")
+			self.write(f"M=D")  # RAM[{addr}]=*(endFrame-{i})
+
+		### *ARG=pop()
+		### SP=ARG+1
+		...
+
+		### retAddr = *(endFrame-5)
+		# Get the return-address
+		self.write(f"@5")
+		self.write(f"D=D-A")  # D=endFrame-5
+		self.write(f"R13")
+		self.write(f"A=D")
+		self.write(f"M")  # RAM[(endFrame-5)]
+
+		self.writeGoto(cmd=f"goto {rtrnAddrLabel}")
 
 	def writeCall(self, functionName: str, numArgs: int):
-		"""Given a command like:
+		"""
 		call Bar.mult 2
 		call {functionName} {numArgs}
 		"""
 		self.write(f"////////////////////")
 		self.write(f"// function {functionName} {numArgs}")
-		# We
+		#################
+		### PREPARE PHASE
 
+		# The argument {numArgs} informs us that
+		# n arguments have been pushed onto the stack.
+		# So, we know how many values on the stack should
+		# be treated as arguments.
+
+		# Unique return label
+		a = self.filename
+		b = self.returnAddr_count
+		rtrnAddrLabel = f"{a}.RET_{b}"
+		# '@rtrnAddrLabel' = '{lineAtWhichLabel: (rtrnAddrLabel) was declared}'
+		# eg.    '@rtrnAddrLabel' = '@4'
+
+		self.returnAddr_count += 1
+
+		# Push returnAddressLabel
+		self.write(f"@{rtrnAddrLabel}")
+		self.write(f"D=A")
+		self.push_D_to_stack()
+
+		# Save the caller's state
+		# Saves LCL, ARG, ..., of the caller
+		for addr in ('@LCL', '@ARG', '@THIS', '@THAT'):
+			self.write(addr)
+			self.write('D=A')
+			self.push_D_to_stack()
+
+		# Reposition ARG
+		self.write(f"@SP       ")
+		self.write(f"D=M       ")  # D=RAM[SP]
+		self.write(f"@5        ")
+		self.write(f"D=D-A     ")  # D-=5
+		self.write(f"@{numArgs}")
+		self.write(f"D=D-A     ")  # D-={numArgs}
+		self.write(f"@ARG      ")
+		self.write(f"M=D       ")  # RAM[ARG]=D
+
+		# Reposition LCL
+		self.write('@SP ')
+		self.write('D=M ')
+		self.write('@LCL')
+		self.write('M=D ')  # RAM[LCL]=RAM[SP]
+
+		# Transfer control to the called function
+		self.write(f"goto {functionName}")
+
+		# Declare a label for the return-address
+		self.write(f"({rtrnAddrLabel})")
+
+	### PREPARE PHASE END
+	#####################
 
 	def close(self):
 		self.file.close()
@@ -270,7 +389,7 @@ class CodeWriter:
 		self.write(f"A=M         ")
 		self.write(f"A=M  //A=*SP")
 
-	def push_from_D_to_stack(self):
+	def push_D_to_stack(self):
 		"""Push the value of D to the stack;
 		increment SP
 		"""
