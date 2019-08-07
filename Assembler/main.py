@@ -52,10 +52,10 @@ def translate_Ainstr_to_bin(a_instr: str) -> str:
 		return addr_bin
 
 	else:
+		# It must be a new variable!
 		# The label xxx from the a-instr '@xxx'
-		# is not yet in the symbol table.
-		# Add it to the symbol table, it must
-		# be a new variable!
+		# is not yet in the symbol table; add
+		# it to the symbol table.
 
 		# Calculate the RAM addr of the var
 		i = symbolTable.variablesEncountered

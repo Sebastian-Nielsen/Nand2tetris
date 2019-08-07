@@ -41,7 +41,12 @@ def translate(filename):
 		elif curr_cmdType == 'C_RETURN':
 			cw.writeReturn()
 		elif curr_cmdType == 'C_CALL':
-			...
+			# Eg. 'call Bar.mult 2'
+			curr_cmdArgs = curr_cmd.split(' ')
+			cw.writeCall(
+				functionName=curr_cmdArgs[1],
+				numArgs=curr_cmdArgs[2]
+			)
 
 		print('____________')
 		print(curr_cmd)

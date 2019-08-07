@@ -203,28 +203,60 @@ class CodeWriter:
 	def writeReturn(self):
 		"""
 		endFrame=LCL
+		###########    retAddr=*(endFrame-5)
 		*ARG=pop()
 		SP=ARG+1
 		THAT=*(endFrame-1)
 		THIS=*(endFrame-2)
 		ARG =*(endFrame-3)
 		LCL =*(endFrame-4)
-		retAddr=*(endFrame-5)
 		goto retAddr
 		"""
+		RET = 'R14'
+		endFrame = 'R13'
+
 		### endFrame=LCL
 		# create a temporary variable 'endFrame'
 		self.write(f"@LCL")
 		self.write(f"D=M")
-		self.write(f"@endFrame")
-		self.write(f"M=D")  # endFrame=LCL
+		self.write(f"@{endFrame}")
+		self.write(f"M=D")  # endFrame=M[@LCL]
 
-		for i, addr in enumerate(
-				('@THAT', '@THIS', '@ARG', '@LCL'),
-				1):
+		### retAddr = *(endFrame-5)
+		# Get the return-address
+		self.write(f"@{endFrame}")
+		self.write(f"D=M")
+		self.write(f"@5")
+		self.write(f"D=D-A")
+		self.write(f"A=D")  # A=(endFrame-5)
+		self.write(f"D=M")  # D=M[(endFrame-5)]
+		# NOTE: D is now equal to the line number of the
+		# return-label that is positioned just after the
+		# call cmd to the currently executing function.
+		# This is the place we want to jump to, when we
+		# are done restoring the state of the caller.
+		self.write(f"@{RET}")
+		self.write(f"M=D")
+
+		### *ARG=pop()
+		self.pop_stack_into_D()
+		self.write('@ARG')
+		self.write('A=M')
+		self.write('M=D')
+
+		### SP=ARG+1
+		self.write('@1')
+		self.write('D=A')
+		self.write('@ARG')
+		self.write('D=A-D')
+		self.write('@SP')
+		self.write('M=D')
+
+		i = 1
+		for addr in ('@THAT', '@THIS', '@ARG', '@LCL'):
 			### {addr}=*(endFrame-{i})
 			# Restore {addr} of the caller
-			self.write(f"@endFrame")
+			self.write(f"@{endFrame}")
 			self.write(f"D=A")
 			self.write(f"@{i}")
 			self.write(f"D=D-A")  # D=(endFrame-{i})
@@ -233,20 +265,11 @@ class CodeWriter:
 			self.write(f"D=M")  # D=*(endFrame-{i})
 			self.write(f"@THAT")
 			self.write(f"M=D")  # RAM[{addr}]=*(endFrame-{i})
+			i += 1
 
-		### *ARG=pop()
-		### SP=ARG+1
-		...
-
-		### retAddr = *(endFrame-5)
-		# Get the return-address
-		self.write(f"@5")
-		self.write(f"D=D-A")  # D=endFrame-5
-		self.write(f"R13")
-		self.write(f"A=D")
-		self.write(f"M")  # RAM[(endFrame-5)]
-
-		self.writeGoto(cmd=f"goto {rtrnAddrLabel}")
+		self.write(f"@{RET}")
+		self.write(f"A=M")
+		self.write(f"0;JMP")
 
 	def writeCall(self, functionName: str, numArgs: int):
 		"""
@@ -268,13 +291,13 @@ class CodeWriter:
 		b = self.returnAddr_count
 		rtrnAddrLabel = f"{a}.RET_{b}"
 		# '@rtrnAddrLabel' = '{lineAtWhichLabel: (rtrnAddrLabel) was declared}'
-		# eg.    '@rtrnAddrLabel' = '@4'
+		# eg.    '@rtrnAddrLabel' = '@4'  (declared at line 4)
 
 		self.returnAddr_count += 1
 
 		# Push returnAddressLabel
-		self.write(f"@{rtrnAddrLabel}")
-		self.write(f"D=A")
+		self.write(f"@{rtrnAddrLabel}")  # A is equal to the
+		self.write(f"D=A")  # line number of the (rtrnAddrLabel)
 		self.push_D_to_stack()
 
 		# Save the caller's state
