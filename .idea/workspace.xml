@@ -2,11 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f50de58f-5ba1-4707-a10a-14c89b4f4c62" name="Default Changelist" comment="Default Changelist">
+      <change afterPath="$PROJECT_DIR$/VM translator/Class1.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM translator/Class2.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM translator/Sys.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VM translator/outFile.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembler/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Assembler/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM translator/CodeWriter.py" beforeDir="false" afterPath="$PROJECT_DIR$/VM translator/CodeWriter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VM translator/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/VM translator/Main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VM translator/file.asm" beforeDir="false" afterPath="$PROJECT_DIR$/VM translator/file.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM translator/file.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/VM translator/file.vm" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -74,6 +78,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\sebas\PycharmProjects\Nand2tetris compilers &amp; assembler\VM translator" />
+      <recent name="C:\Users\sebas\PycharmProjects\Nand2tetris compilers &amp; assembler\VM translator\vmFiles_to_translate" />
       <recent name="C:\Users\sebas\PycharmProjects\Nand2tetris compilers &amp; assembler\Assembler\BAD first implemention" />
       <recent name="C:\Users\sebas\PycharmProjects\Assembler(nand2tetris)" />
     </key>
@@ -127,7 +133,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/VM translator/Main.py" />
-      <option name="PARAMETERS" value="file.vm" />
+      <option name="PARAMETERS" value="/" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -252,7 +258,10 @@
       <workItem from="1565016717662" duration="12095000" />
       <workItem from="1565117015088" duration="1625000" />
       <workItem from="1565122816345" duration="1864000" />
-      <workItem from="1565172629656" duration="19932000" />
+      <workItem from="1565172629656" duration="25251000" />
+      <workItem from="1565274806931" duration="16927000" />
+      <workItem from="1565304298176" duration="1114000" />
+      <workItem from="1565372016273" duration="18476000" />
     </task>
     <servers />
   </component>
@@ -301,7 +310,7 @@
     <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Parser.coverage" NAME="Parser Coverage Results" MODIFIED="1564586943749" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/VM translator" />
     <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Parser__1_.coverage" NAME="Parser (1) Coverage Results" MODIFIED="1564507653380" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Assembler" />
     <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$main.coverage" NAME="main Coverage Results" MODIFIED="1564581383886" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Assembler" />
-    <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Main.coverage" NAME="Main Coverage Results" MODIFIED="1565210599888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/VM translator" />
+    <SUITE FILE_PATH="coverage/Nand2tetris_compilers___assembler$Main.coverage" NAME="Main Coverage Results" MODIFIED="1565390455526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/VM translator" />
     <SUITE FILE_PATH="coverage/Assembler_nand2tetris_$Assembler.coverage" NAME="Assembler Coverage Results" MODIFIED="1564264250755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
