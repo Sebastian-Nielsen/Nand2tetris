@@ -140,6 +140,7 @@ class CodeWriter:
 			self.pop_stack_into_D()
 
 			self.write('@R13')
+			self.write('A=M')
 			self.write('M=D')
 			return
 		else:
@@ -164,9 +165,9 @@ class CodeWriter:
 		"""
 		args = cmd.split(' ')
 		labelName = args[1]
-		self.write(f"////////////////////")
-		self.write(f"// {cmd}")
-		self.write(f"@{self.filename}${labelName}")
+		self.write(f'////////////////////')
+		self.write(f'// {cmd}')
+		self.write(f'@{self.filename}${labelName}')
 		self.write('0;JMP')
 
 	def writeIfgoto(self, cmd):
@@ -177,11 +178,11 @@ class CodeWriter:
 		"""
 		args = cmd.split(' ')
 		labelName = args[1]
-		self.write(f"////////////////////")
-		self.write(f"// {cmd}    ")
+		self.write(f'////////////////////')
+		self.write(f'// {cmd}')
 		self.pop_stack_into_D()
-		self.write(f"@{self.filename}${labelName}")
-		self.write(f"D;JNE       ")
+		self.write(f'@{self.filename}${labelName}')
+		self.write('D;JNE')
 
 	def writeFunction(self, functionName: str, numLocals: int):
 		"""Given a command like:
@@ -191,12 +192,11 @@ class CodeWriter:
 		self.write(f"////////////////////")
 		self.write(f"// function {functionName} {numLocals}")
 		# Declaress a label for the function entry
-		self.write(f"({functionName})")  # TODO change this to ({self.filename}.{functionName})?
+		self.write(f"({functionName})")  
 		# nVars = number of local variables
 		# Initializes the local variables to 0
 		for _ in range(numLocals):
-			self.write('@0 ')  # 'Push 0'
-			self.write('D=A')
+			self.write('D=0')  # 'Push 0'
 			self.push_D_to_stack()
 
 	def writeReturn(self):
@@ -248,11 +248,10 @@ class CodeWriter:
 		self.write('M=D')
 
 		### SP=ARG+1
-		self.write('D=1')
 		self.write('@ARG')
-		self.write('D=M+D')
+		self.write('D=M')
 		self.write('@SP')
-		self.write('M=D')
+		self.write('M=D+1')
 
 		i = 1
 		for addr in ('@THAT', '@THIS', '@ARG', '@LCL'):
@@ -361,9 +360,9 @@ class CodeWriter:
 		stores a pointer (like the first five) or
 		not (like the last 11 reserved addresses).
 		"""
-		# Get the predefined addresses.
-		# E.g. 'LCL' is the predefined address of
-		# 'local' or R1
+		# Get the predefined address string or
+		# the associated address baseAddr number
+		# of the segment.
 		address = self.addresses.get(segment)
 
 		if segment == 'constant':
@@ -371,6 +370,7 @@ class CodeWriter:
 			return
 
 		elif segment in ('local', 'argument', 'this', 'that'):
+			# {address} is as string
 			self.write(f"@{address}")
 			self.write(f'D=M       //baseAddr of {segment} ')
 			self.write(f'@{index}                          ')
@@ -379,13 +379,16 @@ class CodeWriter:
 
 		elif segment in ('pointer', 'temp'):
 			# {address} is an int
-			self.write(f"@{address + index}")
+			self.write(f"@{address + int(index)}")
 			self.write(f'D=A   // baseAddr of {segment}')
 			return
 
 		elif segment in ('static'):
 			self.write(f'@{self.filename}.{index}')
 			return
+
+		else:
+			self.raise_unknown(segment)
 
 	def address_dict(self):
 		return {
