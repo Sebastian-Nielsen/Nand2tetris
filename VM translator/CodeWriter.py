@@ -3,8 +3,8 @@ class CodeWriter:
 		self.file = open(f"{outFile}.asm", 'w')
 		self.addresses = self.address_dict()
 		self.filename = None  # filename of vm file that is being translated
-		self.boolean_count = 0
-		self.returnAddr_count = 0
+		self.bool_count = 0
+		self.returnAddr_count = 0 # number of return addresses created so far
 		self.DEBUG_lineNumber = 0  # Solely for debugging purposes
 
 
@@ -60,7 +60,7 @@ class CodeWriter:
 			# Second value of stack (x) or (A) #
 			self.write("D=A-D")
 
-			i = self.boolean_count
+			i = self.bool_count
 			self.write(f"@Bool_{i}_TRUE")
 
 			if cmd == 'lt':  # (x < y) aka (x-y < 0)
@@ -76,7 +76,7 @@ class CodeWriter:
 			self.write(f"(Bool_{i}_TRUE) ")
 			self.write(f"D=-1            ")
 			self.write(f"(Bool_{i}_FALSE)")
-			self.boolean_count += 1
+			self.bool_count += 1
 
 		elif cmd == 'and':
 			self.write('D=A&D')
@@ -105,71 +105,43 @@ class CodeWriter:
 		# index: 2            #
 		#######################
 		"""
+		self.write(f"////////////////////")
+		self.write(f"//{command} {segment} {i}")
+
+		self.resolve_address(segment, i)
+		# The A-register is now resolved to hold
+		# the address that corresponds to that of
+		# the given {segment} and {i}.
+
 		if command == 'C_PUSH':
-			self.write(f"////////////////////")
-			self.write(f"//push {segment} {i}")
-
 			if segment == 'constant':
-				# Store the constant in D
-				# Then push D_to_the_stack()
-				self.write(f"@{i}")
-				self.write(f"D=A ")
+				# The >A-register< holds a constant.
+				self.write('D=A')
+				self.push_D_to_stack()
+				return
 			else:
-				# Store the baseAddr of segment in D
-				self.resolve_address(segment)
+				# The >A-register< holds the address that holds
+				# the value we want to push to the stack.
+				self.write('D=M')
+				self.push_D_to_stack()
+				return
 
-				# Add {i} to the baseAddr of {segment}
-				# Store the value from the resulting
-				# address in D and push D to the stack.
-				self.write(f"@{i}                ")
-				self.write(f"A=D+A //A=segment+i ")
-				self.write(f"D=M                 ")
-			self.push_D_to_stack()
-			return
 		elif command == 'C_POP':
-			self.write(f"////////////////////")
-			self.write(f"//pop {segment} {i} ")
-			if segment == 'temp':
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-				self.write('@0')
-			#######################################
-			# PSEUDO ASSEMBLY:   SP--; D=*SP      #
-			#######################################
+			# The >A-register< holds the address to which we
+			# want to store the current top value of the stack.
+
+			# Store the address that is in the A-register in a
+			# temporariy memory location: R13
+			self.write('D=A')
+			self.write('@R13')
+			self.write('M=D')
+
+			# Pop the top value of the stack
 			self.pop_stack_into_D()
-			# Store popped value temporarily in R13
-			self.write(f"@R13")
-			self.write(f"M=D ")
 
-			# Store the base address of {segment} in D
-			self.resolve_address(segment)
-
-			self.write(f"@{i}")
-			self.write(f"D=D+A   //D=address of {segment} {i}")
-			self.write(f"@R6")
-			self.write(f"M=D ")
-			self.write(f"@R13")
-			self.write(f"D=M ")
-			self.write(f"@R6")
-			self.write(f"A=M ")
-			self.write(f"M=D ")
-			if segment == 'temp':
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
-				self.write('@1')
+			self.write('@R13')
+			self.write('M=D')
+			return
 		else:
 			self.raise_unknown(command)
 
@@ -184,7 +156,7 @@ class CodeWriter:
 		labelName = args[1]
 		self.write(f"////////////////////")
 		self.write(f"// {cmd}")
-		self.write(f"({labelName})")
+		self.write(f"({self.filename}${labelName})")
 
 	def writeGoto(self, cmd):
 		"""
@@ -194,7 +166,7 @@ class CodeWriter:
 		labelName = args[1]
 		self.write(f"////////////////////")
 		self.write(f"// {cmd}")
-		self.write(f"@{labelName}")
+		self.write(f"@{self.filename}${labelName}")
 		self.write('0;JMP')
 
 	def writeIfgoto(self, cmd):
@@ -208,7 +180,7 @@ class CodeWriter:
 		self.write(f"////////////////////")
 		self.write(f"// {cmd}    ")
 		self.pop_stack_into_D()
-		self.write(f"@{labelName}")
+		self.write(f"@{self.filename}${labelName}")
 		self.write(f"D;JNE       ")
 
 	def writeFunction(self, functionName: str, numLocals: int):
@@ -302,17 +274,17 @@ class CodeWriter:
 
 	def writeCall(self, functionName: str, numArgs: int):
 		"""
+		# The argument {numArgs} informs us that
+		# n arguments have been pushed onto the stack.
+		# So, we know how many values on the stack should
+		# be treated as arguments.
+	
 		call Bar.mult 2
 		call {functionName} {numArgs}
 		"""
 		self.write(f"////////////////////")
 		self.write(f"// call {functionName} {numArgs}")
-
-		# The argument {numArgs} informs us that
-		# n arguments have been pushed onto the stack.
-		# So, we know how many values on the stack should
-		# be treated as arguments.
-
+		
 		# Unique return label
 		a = self.filename
 		b = self.returnAddr_count
@@ -335,14 +307,14 @@ class CodeWriter:
 			self.push_D_to_stack()
 
 		# Reposition ARG
-		self.write(f"@SP       ")
-		self.write(f"D=M       ")  # D=RAM[SP]
-		self.write(f"@5        ")
-		self.write(f"D=D-A     ")  # D-=5
-		self.write(f"@{numArgs}")
-		self.write(f"D=D-A     ")  # D-={numArgs}
-		self.write(f"@ARG      ")
-		self.write(f"M=D       ")  # RAM[ARG]=D
+		self.write(f'@SP       ')
+		self.write(f'D=M       ')  # D=RAM[SP]
+		self.write(f'@5        ')
+		self.write(f'D=D-A     ')  # D-=5
+		self.write(f'@{numArgs}')
+		self.write(f'D=D-A     ')  # D-={numArgs}
+		self.write(f'@ARG      ')
+		self.write(f'M=D       ')  # RAM[ARG]=D
 
 		# Reposition LCL
 		self.write('@SP ')
@@ -350,8 +322,11 @@ class CodeWriter:
 		self.write('@LCL')
 		self.write('M=D ')  # RAM[LCL]=RAM[SP]
 
-		# Transfer control to the called function
-		self.writeGoto(f"goto {functionName}")
+		# Transfer control to the called function (goto {functionName})
+		# (It is important not to call "self.writeGoto", as it will prepend
+		# {self.filename}$, which we do not want!)
+		self.write(f"@{functionName}")
+		self.write(f"0;JMP")
 
 		# Declare a label for the return-address
 		self.write(f"({rtrnAddrLabel})")
@@ -361,8 +336,8 @@ class CodeWriter:
 
 	### END API
 	###########
-	def resolve_address(self, segment):
-		"""Given 'segment' and 'i';
+	def resolve_address(self, segment, index):
+		"""Given 'segment' and 'index' (i);
 		- if the value of the segment is a
 		pointer to another address -->
 		:return *(segment+i)    // this might not be
@@ -386,12 +361,31 @@ class CodeWriter:
 		stores a pointer (like the first five) or
 		not (like the last 11 reserved addresses).
 		"""
-		# TODO We haven't handled "pointer" -- I don't know what that is. Look it up in address_dict
-		self.write(f"@{self.addresses[segment]}")
-		if segment in ('local', 'argument', 'this', 'that'):
-			self.write(f"D=M   // baseAddr of {segment}")
-		else:
-			self.write(f"D=A   // baseAddr of {segment}")
+		# Get the predefined addresses.
+		# E.g. 'LCL' is the predefined address of
+		# 'local' or R1
+		address = self.addresses.get(segment)
+
+		if segment == 'constant':
+			self.write(f"@{index}")
+			return
+
+		elif segment in ('local', 'argument', 'this', 'that'):
+			self.write(f"@{address}")
+			self.write(f'D=M       //baseAddr of {segment} ')
+			self.write(f'@{index}                          ')
+			self.write('A=D+A                              ')
+			return
+
+		elif segment in ('pointer', 'temp'):
+			# {address} is an int
+			self.write(f"@{address + index}")
+			self.write(f'D=A   // baseAddr of {segment}')
+			return
+
+		elif segment in ('static'):
+			self.write(f'@{self.filename}.{index}')
+			return
 
 	def address_dict(self):
 		return {

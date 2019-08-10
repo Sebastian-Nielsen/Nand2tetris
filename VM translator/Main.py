@@ -7,10 +7,12 @@ import sys, os
 class Main:
 
 	def __init__(self, filepath):
+		self.parse_files(filepath)
+													# Initialize CW with a filename, so that
+													# Write init
 		self.cw = CodeWriter(outFile='outFile')
 		self.cw.writeInit()
 
-		self.parse_files(filepath)
 
 		print(f"Files that is to be translated: {self.vm_filenames}")
 
